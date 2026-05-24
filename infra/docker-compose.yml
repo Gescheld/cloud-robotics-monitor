@@ -1,0 +1,60 @@
+# docker-compose.yml — local-first stack for cloud-robotics-monitor
+# Run from the repo root:    docker compose -f infra/docker-compose.yml up --build
+#
+# Services in this file are progressively enabled as `services/*/main.py` is implemented.
+# The current scaffold spins up only the infrastructure (broker, db, grafana).
+# Application services (simulator, ingest, api) will be added in upcoming commits.
+
+services:
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: crm-mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
+  postgres:
+    image: postgres:16
+    container_name: crm-postgres
+    environment:
+      POSTGRES_USER: robotics
+      POSTGRES_PASSWORD: robotics
+      POSTGRES_DB: telemetry
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../postgres-data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  grafana:
+    image: grafana/grafana-oss:11.1.0
+    container_name: crm-grafana
+    depends_on:
+      - postgres
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+
+  # Application services will be enabled in upcoming commits:
+  #
+  # simulator:
+  #   build: ../services/simulator
+  #   depends_on: [mosquitto]
+  #   environment:
+  #     MQTT_HOST: mosquitto
+  #     ROBOT_ID: robot-01
+  #
+  # ingest:
+  #   build: ../services/ingest
+  #   depends_on: [mosquitto, postgres]
+  #   environment:
+  #     MQTT_HOST: mosquitto
+  #     POSTGRES_URL: postgresql://robotics:robotics@postgres:5432/telemetry

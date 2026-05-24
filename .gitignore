@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+**/.docker/
+*.dockerignore.bak
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+credentials.json
+
+# Logs / runtime
+logs/
+*.log
+
+# Local data
+data/
+postgres-data/
+grafana-data/
+mosquitto-data/
