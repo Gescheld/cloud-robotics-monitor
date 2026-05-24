@@ -1,0 +1,16 @@
+apiVersion: 1
+
+datasources:
+  - name: Telemetry Postgres
+    type: postgres
+    access: proxy
+    url: postgres:5432
+    user: robotics
+    secureJsonData:
+      password: robotics
+    jsonData:
+      database: telemetry
+      sslmode: disable
+      postgresVersion: 1600
+    isDefault: true
+    editable: false

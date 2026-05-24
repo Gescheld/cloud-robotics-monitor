@@ -40,7 +40,7 @@ See [`docs/architecture.md`](docs/architecture.md) for a detailed diagram and de
 ## Roadmap
 
 - [x] Repo scaffolding, architecture & feature spec
-- [ ] Simulator service publishing to MQTT
+- [x] Simulator service publishing to MQTT (F1)
 - [ ] Ingest service writing to Postgres
 - [ ] Grafana dashboard (live joint values, error counts)
 - [ ] Rolling-window anomaly detection (statistical, no ML yet)
@@ -64,21 +64,32 @@ See [`docs/architecture.md`](docs/architecture.md) for a detailed diagram and de
 
 ## Getting started
 
-> **Note:** First services are not yet implemented — see roadmap. The scaffold below is in place; running `docker compose up` will follow with the first commit of `services/simulator/`.
+> **Note:** F1 (simulator → MQTT) is implemented. F2 (ingest → Postgres) and Grafana dashboards are next — see roadmap.
 
 ### Prerequisites
 
 - Docker Desktop (Windows / macOS) or Docker Engine + Compose plugin (Linux)
 - Python 3.11+ for running services natively (optional)
 
-### Quick start (planned)
+### Quick start
 
 ```bash
 git clone https://github.com/Gescheld/cloud-robotics-monitor.git
 cd cloud-robotics-monitor
 docker compose -f infra/docker-compose.yml up --build
-# Grafana on http://localhost:3000  (admin / admin)
-# Ingest API on http://localhost:8000/docs
+```
+
+| Service | URL |
+|---------|-----|
+| Grafana | http://localhost:3000 (admin / admin) |
+| MQTT | `localhost:1883` |
+| Postgres | `localhost:5432` — user `robotics`, password `robotics`, db `telemetry` |
+
+Verify MQTT messages (optional, from repo root with Python + `paho-mqtt`):
+
+```bash
+pip install paho-mqtt
+python scripts/verify_mqtt.py
 ```
 
 ## Project structure

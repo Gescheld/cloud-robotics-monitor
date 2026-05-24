@@ -1,9 +1,9 @@
-# docker-compose.yml — local-first stack for cloud-robotics-monitor
-# Run from the repo root:    docker compose -f infra/docker-compose.yml up --build
+# Run from repo root:
+#   docker compose -f infra/docker-compose.yml up --build
 #
-# Services in this file are progressively enabled as `services/*/main.py` is implemented.
-# The current scaffold spins up only the infrastructure (broker, db, grafana).
-# Application services (simulator, ingest, api) will be added in upcoming commits.
+# Grafana:  http://localhost:3000  (admin / admin)
+# Postgres: localhost:5432  (robotics / robotics, db: telemetry)
+# MQTT:     localhost:1883
 
 services:
 
@@ -25,36 +25,44 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ../postgres-data:/var/lib/postgresql/data
+      - crm-postgres-data:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U robotics -d telemetry"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   grafana:
     image: grafana/grafana-oss:11.1.0
     container_name: crm-grafana
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
     ports:
       - "3000:3000"
     volumes:
-      - ../grafana-data:/var/lib/grafana
+      - crm-grafana-data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
 
-  # Application services will be enabled in upcoming commits:
-  #
-  # simulator:
-  #   build: ../services/simulator
-  #   depends_on: [mosquitto]
-  #   environment:
-  #     MQTT_HOST: mosquitto
-  #     ROBOT_ID: robot-01
-  #
-  # ingest:
-  #   build: ../services/ingest
-  #   depends_on: [mosquitto, postgres]
-  #   environment:
-  #     MQTT_HOST: mosquitto
-  #     POSTGRES_URL: postgresql://robotics:robotics@postgres:5432/telemetry
+  simulator:
+    build: ../services/simulator
+    container_name: crm-simulator
+    depends_on:
+      - mosquitto
+    environment:
+      ROBOT_ID: robot-01
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
+      PUBLISH_HZ: "20"
+      FAULT_INTERVAL_S: "60"
+      FAULT_DURATION_S: "2"
+    restart: unless-stopped
+
+volumes:
+  crm-postgres-data:
+  crm-grafana-data:
