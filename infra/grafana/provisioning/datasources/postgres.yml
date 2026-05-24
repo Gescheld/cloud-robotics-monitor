@@ -2,6 +2,7 @@ apiVersion: 1
 
 datasources:
   - name: Telemetry Postgres
+    uid: telemetry-pg
     type: postgres
     access: proxy
     url: postgres:5432

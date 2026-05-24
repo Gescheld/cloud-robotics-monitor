@@ -42,7 +42,7 @@ See [`docs/architecture.md`](docs/architecture.md) for a detailed diagram and de
 - [x] Repo scaffolding, architecture & feature spec
 - [x] Simulator service publishing to MQTT (F1)
 - [x] Ingest service writing to Postgres (F2)
-- [ ] Grafana dashboard (live joint values, error counts)
+- [x] Grafana dashboard — joint plots, currents, temperature, faults (F3)
 - [ ] Rolling-window anomaly detection (statistical, no ML yet)
 - [ ] Alerting (Grafana → file/webhook)
 - [ ] AWS Free Tier deployment guide
@@ -81,7 +81,7 @@ docker compose -f infra/docker-compose.yml up --build
 
 | Service | URL |
 |---------|-----|
-| Grafana | http://localhost:3000 (admin / admin) |
+| Grafana | http://localhost:3000 (admin / admin) — dashboard: http://localhost:3000/d/robot-telemetry |
 | Ingest API | http://localhost:8000/stats — http://localhost:8000/docs |
 | MQTT | `localhost:1883` |
 | Postgres | `localhost:5432` — user `robotics`, password `robotics`, db `telemetry` |
