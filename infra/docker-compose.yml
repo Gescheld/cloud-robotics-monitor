@@ -63,6 +63,24 @@ services:
       FAULT_DURATION_S: "2"
     restart: unless-stopped
 
+  ingest:
+    build: ../services/ingest
+    container_name: crm-ingest
+    depends_on:
+      mosquitto:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+    environment:
+      MQTT_HOST: mosquitto
+      MQTT_PORT: 1883
+      POSTGRES_URL: postgresql://robotics:robotics@postgres:5432/telemetry
+      BATCH_INTERVAL_S: "0.5"
+      BATCH_SIZE: "100"
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
 volumes:
   crm-postgres-data:
   crm-grafana-data:

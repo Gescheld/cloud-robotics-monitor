@@ -41,7 +41,7 @@ See [`docs/architecture.md`](docs/architecture.md) for a detailed diagram and de
 
 - [x] Repo scaffolding, architecture & feature spec
 - [x] Simulator service publishing to MQTT (F1)
-- [ ] Ingest service writing to Postgres
+- [x] Ingest service writing to Postgres (F2)
 - [ ] Grafana dashboard (live joint values, error counts)
 - [ ] Rolling-window anomaly detection (statistical, no ML yet)
 - [ ] Alerting (Grafana → file/webhook)
@@ -64,7 +64,7 @@ See [`docs/architecture.md`](docs/architecture.md) for a detailed diagram and de
 
 ## Getting started
 
-> **Note:** F1 (simulator → MQTT) is implemented. F2 (ingest → Postgres) and Grafana dashboards are next — see roadmap.
+> **Note:** F1 (simulator → MQTT) and F2 (MQTT → Postgres ingest) are implemented. Grafana dashboards are next.
 
 ### Prerequisites
 
@@ -82,6 +82,7 @@ docker compose -f infra/docker-compose.yml up --build
 | Service | URL |
 |---------|-----|
 | Grafana | http://localhost:3000 (admin / admin) |
+| Ingest API | http://localhost:8000/stats — http://localhost:8000/docs |
 | MQTT | `localhost:1883` |
 | Postgres | `localhost:5432` — user `robotics`, password `robotics`, db `telemetry` |
 
